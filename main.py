@@ -9,7 +9,7 @@ def start(update, content):
     name = update.message.chat.first_name
     if is_new_user(id_user):
         add_user(id_user)
-        
+
     update.message.reply_text("Привет! Похоже, ты впервые пользуешься этим ботом. Для того, чтобы узнать,"
                               " что он умеет, введи команду /help")
     return 1
@@ -34,6 +34,15 @@ def set_topics(update, context):
     reply_markup = markup
     update.message.reply_text("Расскажи мне о своих интересах, чтобы я мог подобрать для тебя интересные статьи",
                               reply_markup=markup)
+    user_topics.append(update.message.text)
+
+
+def set_authors(update, context):
+    update.message.reply_text("Возможно, ты хотел бы видеть посты конкретных авторов. Если же нет, введи /skip")
+    if update.message.text == "/skip":
+        return 3
+    else:
+        user_authors.append(update.message.text)
 
 
 def stop(update, context):
@@ -51,7 +60,7 @@ def main():
             # Функция читает ответ на первый вопрос и задаёт второй.
             1: [MessageHandler(Filters.text, set_topics)],
             # Функция читает ответ на второй вопрос и завершает диалог.
-            2: [MessageHandler(Filters.text, help)]
+            2: [MessageHandler(Filters.text, set_authors)]
         },
 
         # Точка прерывания диалога. В данном случае — команда /stop.
