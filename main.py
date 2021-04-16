@@ -1,9 +1,15 @@
 from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CallbackContext, CommandHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
+from functions import *
 
 
 def start(update, content):
+    id_user = update.message.chat.id
+    name = update.message.chat.first_name
+    if is_new_user(id_user):
+        add_user(id_user)
+        
     update.message.reply_text("Привет! Похоже, ты впервые пользуешься этим ботом. Для того, чтобы узнать,"
                               " что он умеет, введи команду /help")
     return 1
