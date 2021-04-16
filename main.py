@@ -51,7 +51,7 @@ def main():
             # Функция читает ответ на первый вопрос и задаёт второй.
             1: [MessageHandler(Filters.text, set_topics)],
             # Функция читает ответ на второй вопрос и завершает диалог.
-            2: [MessageHandler(Filters.text, set_topics)]
+            2: [MessageHandler(Filters.text, help)]
         },
 
         # Точка прерывания диалога. В данном случае — команда /stop.

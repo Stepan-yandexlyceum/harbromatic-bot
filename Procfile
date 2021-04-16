@@ -1,0 +1,1 @@
+web: python alice_skill.py
