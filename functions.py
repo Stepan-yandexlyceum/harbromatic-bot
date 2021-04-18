@@ -9,11 +9,11 @@ def is_new_user(id):
     cur = con.cursor()
 
     list_id_users = cur.execute("""SELECT id FROM users""").fetchall()
-
+    con.commit()
     con.close()
 
     # если пользователь новый возвращаем True, если старый False
-    if id in list_id_users:
+    if id in list_id_users[0]:
         return False
     return True
 
@@ -22,7 +22,43 @@ def add_user(id):
     cur = con.cursor()
 
     cur.execute(f"INSERT INTO users(id) VALUES({id})")
-
+    con.commit()
     con.close()
 
+def add_topic(id, topic):
+    con = sqlite3.connect("users_db.db")
+    cur = con.cursor()
+    topics = get_topic(id)
+
+    if topic in topics or topic[0] == '/':
+        return
+
+    if topics != 'None':
+        topics.append(topic)
+        topic = topics
+        topic = ', '.join(topic)
+
+    print(topic)
+    cur.execute(f"""UPDATE users
+        SET topics = '{topic}'
+        WHERE id = {id}""")
     
+    con.commit()
+    con.close()
+
+
+def get_topic(id):
+    con = sqlite3.connect("users_db.db")
+    cur = con.cursor()
+
+    list_topic = cur.execute("""SELECT topics FROM users""").fetchall()
+
+    con.commit()
+    con.close()
+
+    if list_topic == [(None,)]:
+        return 'None'
+
+    list_topic = list_topic[0][0].split(', ')
+
+    return list_topic
