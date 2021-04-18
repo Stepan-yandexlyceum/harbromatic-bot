@@ -9,11 +9,11 @@ def is_new_user(id):
     cur = con.cursor()
 
     list_id_users = cur.execute("""SELECT id FROM users""").fetchall()
-
+    con.commit()
     con.close()
 
     # если пользователь новый возвращаем True, если старый False
-    if id in list_id_users:
+    if id in list_id_users[0]:
         return False
     return True
 
@@ -22,7 +22,7 @@ def add_user(id):
     cur = con.cursor()
 
     cur.execute(f"INSERT INTO users(id) VALUES({id})")
-
+    con.commit()
     con.close()
 
 def add_topic(id, topic):
@@ -38,7 +38,7 @@ def add_topic(id, topic):
         topic = topics
         topic = ', '.join(topic)
 
-
+    print(topic)
     cur.execute(f"""UPDATE users
         SET topics = '{topic}'
         WHERE id = {id}""")

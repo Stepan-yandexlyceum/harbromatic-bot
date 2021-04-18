@@ -5,6 +5,7 @@ from functions import *
 
 
 id_user = ''
+user_authors = []
 topics_keyboard = [['Google', 'android'],
                        ['linux', 'php'],
                        ['javascript', 'microsoft'],
@@ -22,6 +23,7 @@ def start(update, content):
     if is_new_user(id_user):
         add_user(id_user)
 
+
     update.message.reply_text("Привет! Похоже, ты впервые пользуешься этим ботом. Для того, чтобы узнать,"
                               " что он умеет, введи команду /help")
     return 1
@@ -34,19 +36,12 @@ def help(update, context):
 
 
 def set_topics(update, context):
-    topics_keyboard = [['Google', 'android'],
-                       ['linux', 'php'],
-                       ['javascript', 'microsoft'],
-                       ['apple', 'социальные сети'],
-                       ['стартапы', 'программирование'],
-                       ['Apple', 'дизайн'],
-                       ['python', 'юмор'],
-                       ['интернет', 'хабрахабр']]
     markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
     reply_markup = markup
     update.message.reply_text("Расскажи мне о своих интересах, чтобы я мог подобрать для тебя интересные статьи",
                               reply_markup=markup)
     user_topics.append(update.message.text)
+    return 1
 
 
 def set_authors(update, context):
@@ -65,10 +60,8 @@ def get_my_topics(update, context):
 
                             
 def accepting_response(update, context):
-    
     answer = update.message.text
     add_topic(id_user, answer)
-
 
 
 def stop(update, context):
@@ -76,7 +69,7 @@ def stop(update, context):
 
 
 def main():
-    updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
+    updater = Updater('1763812353:AAGFHoh-fKzDAj4oOX_CR_QW7wMZGDjAML0', use_context=True)
 
     dp = updater.dispatcher
 
@@ -92,7 +85,7 @@ def main():
         # Точка прерывания диалога. В данном случае — команда /stop.
         fallbacks=[CommandHandler('stop', stop)]
     )
-    dp.add_handler(conv_handler)
+    #dp.add_handler(conv_handler)
 
     conv_handler_topics = ConversationHandler(
         entry_points=[CommandHandler('set_topics', set_topics)],
@@ -101,7 +94,7 @@ def main():
             1: [MessageHandler(Filters.text, accepting_response)],
         },
 
-        # Точка прерывания диалога. В данном случае — команда /stop.
+        # Точка прерывания диалога. В данном случае — команда /stop_topics.
         fallbacks=[CommandHandler('stop_topics', stop)]
     )
 
@@ -112,6 +105,8 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("set_topics", set_topics))
+    dp.add_handler(CommandHandler("get_my_topics", get_my_topics))
+    dp.add_handler(CommandHandler("set_authors", set_authors))
     updater.start_polling()
 
     updater.idle()
