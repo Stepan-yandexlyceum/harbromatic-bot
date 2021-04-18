@@ -76,7 +76,7 @@ def stop(update, context):
 
 
 def main():
-    updater = Updater('1763812353:AAGFHoh-fKzDAj4oOX_CR_QW7wMZGDjAML0', use_context=True)
+    updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
 
     dp = updater.dispatcher
 
