@@ -2,6 +2,7 @@ from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CallbackContext, CommandHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
 from functions import *
+from telegram import ReplyKeyboardRemove
 
 
 def start(update, content):
@@ -11,7 +12,8 @@ def start(update, content):
         add_user(id_user)
 
     update.message.reply_text("Привет! Похоже, ты впервые пользуешься этим ботом. Для того, чтобы узнать,"
-                              " что он умеет, введи команду /help")
+                              " что он умеет, введи команду /help. Чтобы выбрать темы, по которым будет производиться"
+                              " оповещение, введи /set_topics")
     return 1
 
 
@@ -32,21 +34,52 @@ def set_topics(update, context):
                        ['интернет', 'хабрахабр']]
     markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
     reply_markup = markup
-    update.message.reply_text("Расскажи мне о своих интересах, чтобы я мог подобрать для тебя интересные статьи",
+    update.message.reply_text("Расскажи мне о своих интересах, чтобы я мог подобрать для тебя интересные статьи."
+                              " Для подтверждения введи /accept",
                               reply_markup=markup)
-    user_topics.append(update.message.text)
+
+    return 2
+
+
+def set_topics2(update, context):
+    if update.message.text == "/accept":
+        update.message.reply_text(
+            "Возможно, ты хотел бы видеть посты конкретных авторов. Для подтверждения или если же нет, введи /accept",
+            reply_markup=ReplyKeyboardRemove())
+        return 3
+    else:
+        user_topics.append(update.message.text)
+        return 2
 
 
 def set_authors(update, context):
-    update.message.reply_text("Возможно, ты хотел бы видеть посты конкретных авторов. Если же нет, введи /skip")
-    if update.message.text == "/skip":
-        return 3
+    if update.message.text == "/accept":
+        update.message.reply_text("Итак, я оповещу тебя по следующим темам:")
+        for i in user_topics:
+            update.message.reply_text(i)
+        if user_authors:
+            update.message.reply_text("А также о публикациях следующих авторов:")
+            for i in user_authors:
+                update.message.reply_text(i)
+        return 4
     else:
         user_authors.append(update.message.text)
+        return 3
+
+
+def final_set(update, context):
+    pass
 
 
 def stop(update, context):
     pass
+
+
+def close_keyboard(update, context):
+    update.message.reply_text(
+        "Ok",
+        reply_markup=ReplyKeyboardRemove()
+    )
 
 
 def main():
@@ -57,10 +90,10 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            # Функция читает ответ на первый вопрос и задаёт второй.
-            1: [MessageHandler(Filters.text, set_topics)],
-            # Функция читает ответ на второй вопрос и завершает диалог.
-            2: [MessageHandler(Filters.text, set_authors)]
+            1: [MessageHandler(Filters.text, set_topics, pass_user_data=True)],
+            2: [MessageHandler(Filters.text, set_topics2, pass_user_data=True)],
+            3: [MessageHandler(Filters.text, set_authors, pass_user_data=True)],
+            4: [MessageHandler(Filters.text, final_set, pass_user_data=True)]
         },
 
         # Точка прерывания диалога. В данном случае — команда /stop.
@@ -72,6 +105,7 @@ def main():
     # dp.add_handler(text_handler)
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
+    dp.add_handler(CommandHandler("close", close_keyboard))
     dp.add_handler(CommandHandler("set_topics", set_topics))
     updater.start_polling()
 
