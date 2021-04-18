@@ -4,7 +4,19 @@ from telegram import ReplyKeyboardMarkup
 from functions import *
 
 
+id_user = ''
+topics_keyboard = [['Google', 'android'],
+                       ['linux', 'php'],
+                       ['javascript', 'microsoft'],
+                       ['apple', 'социальные сети'],
+                       ['стартапы', 'программирование'],
+                       ['Apple', 'дизайн'],
+                       ['python', 'юмор'],
+                       ['интернет', 'хабрахабр']]
+
+
 def start(update, content):
+    global id_user
     id_user = update.message.chat.id
     name = update.message.chat.first_name
     if is_new_user(id_user):
@@ -43,6 +55,20 @@ def set_authors(update, context):
         return 3
     else:
         user_authors.append(update.message.text)
+    
+def get_my_topics(update, context):
+    topics = get_topic(id_user)
+
+    if topics == 'None':
+        update.message.reply_text('Похоже у вас еще нет избранных тем')
+    update.message.reply_text(', '.join(topics))
+
+                            
+def accepting_response(update, context):
+    
+    answer = update.message.text
+    add_topic(id_user, answer)
+
 
 
 def stop(update, context):
@@ -50,7 +76,7 @@ def stop(update, context):
 
 
 def main():
-    updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
+    updater = Updater('1763812353:AAGFHoh-fKzDAj4oOX_CR_QW7wMZGDjAML0', use_context=True)
 
     dp = updater.dispatcher
 
@@ -67,6 +93,19 @@ def main():
         fallbacks=[CommandHandler('stop', stop)]
     )
     dp.add_handler(conv_handler)
+
+    conv_handler_topics = ConversationHandler(
+        entry_points=[CommandHandler('set_topics', set_topics)],
+        states={
+            # Функция читает ответ на вопрос.
+            1: [MessageHandler(Filters.text, accepting_response)],
+        },
+
+        # Точка прерывания диалога. В данном случае — команда /stop.
+        fallbacks=[CommandHandler('stop_topics', stop)]
+    )
+
+    dp.add_handler(conv_handler_topics)
 
     # text_handler = MessageHandler(Filters.text, echo)
     # dp.add_handler(text_handler)
