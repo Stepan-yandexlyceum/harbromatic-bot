@@ -61,11 +61,6 @@ def set_data(update, context):
         user_authors.append(update.message.text)
         return 3
 
-                            
-def accepting_response(update, context):
-    answer = update.message.text
-    add_topic(id_user, answer)
-
 
 def final_set(update, context):
     pass
