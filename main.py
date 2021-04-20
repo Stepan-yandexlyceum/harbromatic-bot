@@ -62,19 +62,6 @@ def set_data(update, context):
         return 3
 
 
-def get_my_topics(update, context):
-    topics = get_topic(id_user)
-
-    if topics == 'None':
-        update.message.reply_text('Похоже у вас еще нет избранных тем')
-    update.message.reply_text(', '.join(topics))
-
-                            
-def accepting_response(update, context):
-    answer = update.message.text
-    add_topic(id_user, answer)
-
-
 def final_set(update, context):
     pass
 
@@ -108,9 +95,7 @@ def main():
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler('start', start)],
         states={
-            1: [MessageHandler(Filters.text, set_topics, pass_user_data=True)],
             2: [MessageHandler(Filters.text, set_topics2, pass_user_data=True)],
-            3: [MessageHandler(Filters.text, set_authors, pass_user_data=True)],
             4: [MessageHandler(Filters.text, final_set, pass_user_data=True)]
         },
 

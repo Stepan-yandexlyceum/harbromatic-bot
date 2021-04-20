@@ -65,7 +65,7 @@ def get_salary(id):
     con.commit()
     con.close()
 
-    if list_topic == (None,):
+    if salary == (None,):
         return 'None'
 
     salary_min, salary_max = int(salary[0]), int(salary[1])
