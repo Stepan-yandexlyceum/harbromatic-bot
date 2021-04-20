@@ -6,8 +6,9 @@ from telegram import ReplyKeyboardRemove
 
 
 def start(update, content):
-    id_user = update.message.chat.id
     global id_user
+    id_user = update.message.chat.id
+    
     name = update.message.chat.first_name
     if is_new_user(id_user):
         add_user(id_user)
