@@ -15,32 +15,25 @@ def start(update, content):
 
     update.message.reply_text("Привет! Похоже, ты впервые пользуешься этим ботом. Для того, чтобы узнать,"
                               " что он умеет, введи команду /help. Чтобы выбрать темы, по которым будет производиться"
-                              " оповещение, введи /set_topics")
+                              " оповещение, введи /set_specialization")
     return 1
 
 
 def help(update, context):
     update.message.reply_text(
-        "Я - бот для оповещения о новых постах на habr.com Ты можешь рассказать мне, какие темы тебя интересуют и"
-        " я помогу тебе не пропустить ни один пост по данным темам")
+        "Я - бот для оповещения о новых вакансиях на hh.ru Ты можешь рассказать мне, какие профессии и цены тебя интересуют и"
+        " я помогу тебе не пропустить ни одну вакансию")
 
 
-def set_topics(update, context):
-    topics_keyboard = [['Google', 'android'],
-                       ['linux', 'php'],
-                       ['javascript', 'microsoft'],
-                       ['apple', 'социальные сети'],
-                       ['стартапы', 'программирование'],
-                       ['Apple', 'дизайн'],
-                       ['python', 'юмор'],
-                       ['интернет', 'хабрахабр']]
-    markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
-    reply_markup = markup
-    update.message.reply_text("Расскажи мне о своих интересах, чтобы я мог подобрать для тебя интересные статьи."
-                              " Для подтверждения введи /accept",
-                              reply_markup=markup)
-
-    return 2
+def set_specialization(update, context):
+    if update.message.text == "/accept":
+        update.message.reply_text(
+            "Введите свою специальность",
+            reply_markup=ReplyKeyboardRemove())
+        return 3
+    else:
+        user_topics.append(update.message.text)
+        return 2
 
 
 def set_topics2(update, context):
@@ -54,7 +47,7 @@ def set_topics2(update, context):
         return 2
 
 
-def set_authors(update, context):
+def set_data(update, context):
     if update.message.text == "/accept":
         update.message.reply_text("Итак, я оповещу тебя по следующим темам:")
         for i in user_topics:
@@ -97,6 +90,16 @@ def close_keyboard(update, context):
     )
 
 
+def open_keyboard(update, context):
+     topics_keyboard = [['/help', '/set_specialization'],
+                       ['/get_my_topics', '/close_keyboard']]
+    markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
+    update.message.reply_text(
+        "Ok",
+        reply_markup=markup
+    )
+
+
 def main():
     updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
 
@@ -121,7 +124,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("close", close_keyboard))
-    dp.add_handler(CommandHandler("set_topics", set_topics))
+    dp.add_handler(CommandHandler("set_topics", set_specialization))
     updater.start_polling()
 
     updater.idle()
