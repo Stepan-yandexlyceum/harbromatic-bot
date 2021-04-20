@@ -25,40 +25,65 @@ def add_user(id):
     con.commit()
     con.close()
 
-def add_topic(id, topic):
+
+def update_salary(id, salary):
     con = sqlite3.connect("users_db.db")
     cur = con.cursor()
-    topics = get_topic(id)
 
-    if topic in topics or topic[0] == '/':
-        return
+    salary = salary.replace(' ', '')
+    salary = salary.split('-')
 
-    if topics != 'None':
-        topics.append(topic)
-        topic = topics
-        topic = ', '.join(topic)
+    salary_min, salary_max = int(salary[0]), int(salary[1])
 
-    print(topic)
     cur.execute(f"""UPDATE users
-        SET topics = '{topic}'
+        SET salary_max = '{salary_max}'
+        SET salary_min = '{salary_min}'
+        WHERE id = {id}""")
+    
+    con.commit()
+    con.close()
+
+def update_specialization(id, specialization):
+    con = sqlite3.connect("users_db.db")
+    cur = con.cursor()
+
+    cur.execute(f"""UPDATE users
+        SET specialization = '{specialization}'
         WHERE id = {id}""")
     
     con.commit()
     con.close()
 
 
-def get_topic(id):
+def get_salary(id):
     con = sqlite3.connect("users_db.db")
     cur = con.cursor()
 
-    list_topic = cur.execute("""SELECT topics FROM users""").fetchall()
+    salary = cur.execute("""SELECT salary_max, salary_min FROM users
+        WHERE id = {id}""").fetchall()
 
     con.commit()
     con.close()
 
-    if list_topic == [(None,)]:
+    if list_topic == (None,):
         return 'None'
 
-    list_topic = list_topic[0][0].split(', ')
+    salary_min, salary_max = int(salary[0]), int(salary[1])
 
-    return list_topic
+    return salary_min, salary_max
+
+
+def get_specialization(id):
+    con = sqlite3.connect("users_db.db")
+    cur = con.cursor()
+
+    specialization = cur.execute("""SELECT specialization FROM users
+        WHERE id = {id}""").fetchall()
+
+    con.commit()
+    con.close()
+
+    if specialization == (None,):
+        return 'None'
+
+    return specialization
