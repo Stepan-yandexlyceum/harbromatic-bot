@@ -91,7 +91,7 @@ def close_keyboard(update, context):
 
 
 def open_keyboard(update, context):
-     topics_keyboard = [['/help', '/set_specialization'],
+    topics_keyboard = [['/help', '/set_specialization'],
                        ['/get_my_topics', '/close_keyboard']]
     markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
     update.message.reply_text(
