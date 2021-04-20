@@ -5,10 +5,10 @@ import os
 
 
 # Метод для получения страницы со списком вакансий
-def getPage(page=0):
+def getPage(vacancy, page=0):
     # Справочник для параметров GET-запроса
     params = {
-        'text': 'NAME:Аналитик',  # Текст фильтра.
+        'text': f'NAME:{vacancy}',  # Текст фильтра.
         'area': 2,  # Поиск ощуществляется по вакансиям города Санкт-Петербург
         'page': page,  # Индекс страницы поиска на HH
         'per_page': 5  # Кол-во вакансий на 1 странице
@@ -18,19 +18,27 @@ def getPage(page=0):
     response = req.json()
     return response
 
-
-
+# Метод парсит json и представляет данные в виде списка словарей
 def parseJobs(data):
+    jobs = []
     for i in range(5):
-        job_salary = data["items"][i]["salary"]["from"]
-        job_name = data["items"][i]["name"]
-        job_city = data["items"][i]["address"]["city"]
-        job_accept_kids = data["items"][i]["accept_kids"]
-        job_published_at = data["items"][i]["published_at"]
-        print(data["items"][0]["salary"]["from"])
+        print(data)
+        try:
+            job_salary = data["items"][i]["salary"]["from"]
+            job_name = data["items"][i]["name"]
+            job_city = data["items"][i]["address"]["city"]
+            job_published_at = data["items"][i]["published_at"]
+            url = data["items"][i]["alternate_url"]
+            jobs.append({"salary": job_salary, "city": job_city, "published_at": job_published_at, "url": url})
+        except TypeError as te:
+            continue
+    return jobs
 
 
-#Считываем первые 20 вакансий
+def getJobs(vacancy, pages=0):
+    return parseJobs(getPage(vacancy, pages))
+
+# Считываем первые 20 вакансий
 # for page in range(0, 4):
 #     print(parseJobs(getPage(0)))
 #     # Преобразуем текст ответа запроса в словарь Python
