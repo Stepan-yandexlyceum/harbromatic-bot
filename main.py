@@ -7,6 +7,7 @@ from telegram import ReplyKeyboardRemove
 
 def start(update, content):
     id_user = update.message.chat.id
+    global id_user
     name = update.message.chat.first_name
     if is_new_user(id_user):
         add_user(id_user)
@@ -65,6 +66,19 @@ def set_authors(update, context):
     else:
         user_authors.append(update.message.text)
         return 3
+
+
+def get_my_topics(update, context):
+    topics = get_topic(id_user)
+
+    if topics == 'None':
+        update.message.reply_text('Похоже у вас еще нет избранных тем')
+    update.message.reply_text(', '.join(topics))
+
+                            
+def accepting_response(update, context):
+    answer = update.message.text
+    add_topic(id_user, answer)
 
 
 def final_set(update, context):
