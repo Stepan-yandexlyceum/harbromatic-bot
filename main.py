@@ -2,7 +2,14 @@ from telegram.ext import Updater, MessageHandler, Filters
 from telegram.ext import CallbackContext, CommandHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
 from functions import *
+from web import *
 from telegram import ReplyKeyboardRemove
+
+
+def help(update, context):
+    update.message.reply_text(
+        "Я - бот для оповещения о новых вакансиях на hh.ru Ты можешь рассказать мне, какие профессии и цены тебя интересуют и"
+        " я помогу тебе не пропустить ни одну вакансию")
 
 
 def start(update, content):
@@ -19,12 +26,6 @@ def start(update, content):
     return 1
 
 
-def help(update, context):
-    update.message.reply_text(
-        "Я - бот для оповещения о новых вакансиях на hh.ru Ты можешь рассказать мне, какие профессии и цены тебя интересуют и"
-        " я помогу тебе не пропустить ни одну вакансию")
-
-
 def set_specialization(update, context):
     update.message.reply_text(
         "Введите свою специальность",
@@ -35,45 +36,28 @@ def set_specialization(update, context):
 def reception_specialization(update, context):
     specialization_user = update.message.text
     update_specialization(id_user, specialization_user)
+    return 3
+
+
+def set_salary(update, context):
     update.message.reply_text(
         "Теперь введите в каком диапазоне вы хотите получать зарплату (два числа через дефис)",
     reply_markup=ReplyKeyboardRemove())
-    return 3
+    return 4
 
 
 def reception_salary(update, context):
     salary_user = update.message.text
     update_salary(id_user, salary_user)
+    return 5
 
 
-
-# def set_topics2(update, context):
-#     if update.message.text == "/accept":
-#         update.message.reply_text(
-#             "Возможно, ты хотел бы видеть посты конкретных авторов. Для подтверждения или если же нет, введи /accept",
-#             reply_markup=ReplyKeyboardRemove())
-#         return 3
-#     else:
-#         user_topics.append(update.message.text)
-#         return 2
-
-
-# def set_data(update, context):
-#     if update.message.text == "/accept":
-#         update.message.reply_text("Итак, я оповещу тебя по следующим темам:")
-#         for i in user_topics:
-#             update.message.reply_text(i)
-#         if user_authors:
-#             update.message.reply_text("А также о публикациях следующих авторов:")
-#             for i in user_authors:
-#                 update.message.reply_text(i)
-#         return 4
-#     else:
-#         user_authors.append(update.message.text)
-#         return 3
+def get_page(update, context):
+    pass
 
 
 def final_set(update, context):
+    print('ctcer')
     pass
 
 
@@ -90,7 +74,7 @@ def close_keyboard(update, context):
 
 def open_keyboard(update, context):
     topics_keyboard = [['/help', '/set_specialization'],
-                       ['/get_my_topics', '/close']]
+                       ['/close', '/set_salary']]
     markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
     update.message.reply_text(
         "Ok",
@@ -99,7 +83,7 @@ def open_keyboard(update, context):
 
 
 def main():
-    updater = Updater('1763812353:AAGFHoh-fKzDAj4oOX_CR_QW7wMZGDjAML0', use_context=True)
+    updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
 
     dp = updater.dispatcher
 
@@ -108,8 +92,9 @@ def main():
         states={
             1: [MessageHandler(Filters.text, set_specialization, pass_user_data=True)],
             2: [MessageHandler(Filters.text, reception_specialization)],
-            3: [MessageHandler(Filters.text, reception_salary)],
-            4: [MessageHandler(Filters.text, final_set, pass_user_data=True)]
+            3: [MessageHandler(Filters.text, set_salary)],
+            4: [MessageHandler(Filters.text, reception_salary)],
+            5: [MessageHandler(Filters.text, final_set, pass_user_data=True)]
         },
 
         # Точка прерывания диалога. В данном случае — команда /stop.
@@ -117,12 +102,25 @@ def main():
     )
     dp.add_handler(conv_handler)
 
+    conv_handler_spec = ConversationHandler(
+        entry_points=[CommandHandler('set_specialization', set_specialization)],
+        states={
+            1: [MessageHandler(Filters.text, set_specialization, pass_user_data=True)],
+            2: [MessageHandler(Filters.text, reception_specialization)],
+        },
+
+        # Точка прерывания диалога. В данном случае — команда /stop.
+        fallbacks=[CommandHandler('stop', stop)]
+    )
+    #dp.add_handler(conv_handler_spec)
+
     # text_handler = MessageHandler(Filters.text, echo)
     # dp.add_handler(text_handler)
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("close", close_keyboard))
     dp.add_handler(CommandHandler("set_specialization", set_specialization))
+    dp.add_handler(CommandHandler("set_salary", set_salary))
     dp.add_handler(CommandHandler("open", open_keyboard))
     updater.start_polling()
 
