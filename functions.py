@@ -32,6 +32,9 @@ def update_salary(id, salary):
     con = sqlite3.connect("users_db.db")
     cur = con.cursor()
 
+    if salary[0] == '/':
+        return
+
     salary = salary.replace(' ', '')
     salary = salary.split('-')
 
