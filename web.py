@@ -18,8 +18,9 @@ def getPage(vacancy, page=0):
     response = req.json()
     return response
 
+
 # Метод парсит json и представляет данные в виде списка словарей
-def parseJobs(data):
+def parseJobs(data, salary):
     jobs = []
     for i in range(5):
         print(data)
@@ -29,14 +30,17 @@ def parseJobs(data):
             job_city = data["items"][i]["address"]["city"]
             job_published_at = data["items"][i]["published_at"]
             url = data["items"][i]["alternate_url"]
-            jobs.append({"salary": job_salary, "city": job_city, "published_at": job_published_at, "url": url})
+            if job_salary < salary or job_salary > salary:
+                continue
+            jobs.append({"name": job_name, "salary": job_salary, "city": job_city, "published_at": job_published_at,
+                         "url": url})
         except TypeError as te:
             continue
     return jobs
 
 
-def getJobs(vacancy, pages=0):
-    return parseJobs(getPage(vacancy, pages))
+def getJobs(vacancy, salary, pages=0):
+    return parseJobs(getPage(vacancy, pages), salary)
 
 # Считываем первые 20 вакансий
 # for page in range(0, 4):

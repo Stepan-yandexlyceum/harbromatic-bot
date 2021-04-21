@@ -3,12 +3,17 @@ from telegram.ext import CallbackContext, CommandHandler, ConversationHandler
 from telegram import ReplyKeyboardMarkup
 from functions import *
 from telegram import ReplyKeyboardRemove
+import schedule
+from web import getJobs
+
+specialization_user = ""
+salary_user = []
 
 
 def start(update, content):
     global id_user, specialization_user, salary_user
     id_user = update.message.chat.id
-    
+
     name = update.message.chat.first_name
     if is_new_user(id_user):
         add_user(id_user)
@@ -28,7 +33,7 @@ def help(update, context):
 def set_specialization(update, context):
     update.message.reply_text(
         "Введите свою специальность",
-    reply_markup=ReplyKeyboardRemove())
+        reply_markup=ReplyKeyboardRemove())
     return 2
 
 
@@ -37,18 +42,45 @@ def reception_specialization(update, context):
     update_specialization(id_user, specialization_user)
     update.message.reply_text(
         "Теперь введите в каком диапазоне вы хотите получать зарплату (два числа через дефис)",
-    reply_markup=ReplyKeyboardRemove())
+        reply_markup=ReplyKeyboardRemove())
     return 3
 
 
-def reception_salary(update, context):
-    salary_user = update.message.text
-    update_salary(id_user, salary_user)
-    return 4
+# def reception_salary(update, context):
+#     salary_user = update.message.text
+#     salary_user = salary_user.replace(' ', '')
+#     salary_user = salary_user.split('-')
+#     salary_user[0] = int(salary_user[0])
+#     salary_user[1] = int(salary_user[1])
+#     update_salary(id_user, salary_user)
+#     return 4
 
 
 def final_set(update, context):
-    pass
+    salary_user = update.message.text
+    salary_user = salary_user.replace(' ', '')
+    salary_user = salary_user.split('-')
+    salary_user[0] = int(salary_user[0])
+    salary_user[1] = int(salary_user[1])
+    update_salary(id_user, salary_user)
+    update.message.reply_text(
+        "Отлично! Теперь вы не пропустите ни одну вакансию на профессию {} с зарплатой {} - {}руб".format(
+            specialization_user, salary_user[0], salary_user[1]))
+    schedule.every(15).minutes.do(get_vacancies)
+    while True:
+        schedule.run_pending()
+
+
+def get_vacancies(update, context):
+    jobs = getJobs(specialization_user, salary_user)
+    update.message.reply_text("Не пропустите новые вакансии!")
+    for job in jobs:
+        update.message.reply_text("Должность: {}"
+                                  "Город: {}"
+                                  "Зарплата: {}"
+                                  "Опубликовано{}"
+                                  "Подробнее{}".format(job["name"], job["city"], job["salary"], job["published_at"],
+                                                       jobs["url"]))
 
 
 def stop(update, context):
@@ -82,7 +114,7 @@ def main():
         states={
             1: [MessageHandler(Filters.text, set_specialization, pass_user_data=True)],
             2: [MessageHandler(Filters.text, reception_specialization)],
-            3: [MessageHandler(Filters.text, reception_salary)],
+            3: [MessageHandler(Filters.text, final_set)],
             4: [MessageHandler(Filters.text, final_set, pass_user_data=True)]
         },
 

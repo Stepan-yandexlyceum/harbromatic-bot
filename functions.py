@@ -3,6 +3,8 @@ import sqlite3
 # здесь хранятся данные о предпочтениях пользователя
 user_topics = []
 user_authors = []
+
+
 # функция проверяющая по id является ли пользователь старым или новым
 def is_new_user(id):
     con = sqlite3.connect("users_db.db")
@@ -18,6 +20,7 @@ def is_new_user(id):
     if id in list_id_users[0]:
         return False
     return True
+
 
 def add_user(id):
     con = sqlite3.connect("users_db.db")
@@ -35,17 +38,15 @@ def update_salary(id, salary):
     if salary[0] == '/':
         return
 
-    salary = salary.replace(' ', '')
-    salary = salary.split('-')
-
-    salary_min, salary_max = int(max(salary)), int(min(salary))
+    salary_min, salary_max = salary[0], salary[1]
 
     cur.execute(f"""UPDATE users
         SET salary_max = '{salary_max}', salary_min = '{salary_min}'
         WHERE id = {id}""")
-    
+
     con.commit()
     con.close()
+
 
 def update_specialization(id, specialization):
     con = sqlite3.connect("users_db.db")
@@ -57,7 +58,7 @@ def update_specialization(id, specialization):
     cur.execute(f"""UPDATE users
         SET specialization = '{specialization}'
         WHERE id = {id}""")
-    
+
     con.commit()
     con.close()
 
