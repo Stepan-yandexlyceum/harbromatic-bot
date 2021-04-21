@@ -44,33 +44,7 @@ def reception_specialization(update, context):
 def reception_salary(update, context):
     salary_user = update.message.text
     update_salary(id_user, salary_user)
-
-
-
-# def set_topics2(update, context):
-#     if update.message.text == "/accept":
-#         update.message.reply_text(
-#             "Возможно, ты хотел бы видеть посты конкретных авторов. Для подтверждения или если же нет, введи /accept",
-#             reply_markup=ReplyKeyboardRemove())
-#         return 3
-#     else:
-#         user_topics.append(update.message.text)
-#         return 2
-
-
-# def set_data(update, context):
-#     if update.message.text == "/accept":
-#         update.message.reply_text("Итак, я оповещу тебя по следующим темам:")
-#         for i in user_topics:
-#             update.message.reply_text(i)
-#         if user_authors:
-#             update.message.reply_text("А также о публикациях следующих авторов:")
-#             for i in user_authors:
-#                 update.message.reply_text(i)
-#         return 4
-#     else:
-#         user_authors.append(update.message.text)
-#         return 3
+    return 4
 
 
 def final_set(update, context):
@@ -99,7 +73,7 @@ def open_keyboard(update, context):
 
 
 def main():
-    updater = Updater('1763812353:AAGFHoh-fKzDAj4oOX_CR_QW7wMZGDjAML0', use_context=True)
+    updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
 
     dp = updater.dispatcher
 
