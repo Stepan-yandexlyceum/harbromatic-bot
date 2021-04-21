@@ -12,6 +12,8 @@ def is_new_user(id):
     con.commit()
     con.close()
 
+    if list_id_users == []:
+        return True
     # если пользователь новый возвращаем True, если старый False
     if id in list_id_users[0]:
         return False
@@ -33,11 +35,10 @@ def update_salary(id, salary):
     salary = salary.replace(' ', '')
     salary = salary.split('-')
 
-    salary_min, salary_max = int(salary[0]), int(salary[1])
+    salary_min, salary_max = int(max(salary)), int(min(salary))
 
     cur.execute(f"""UPDATE users
-        SET salary_max = '{salary_max}'
-        SET salary_min = '{salary_min}'
+        SET salary_max = '{salary_max}', salary_min = '{salary_min}'
         WHERE id = {id}""")
     
     con.commit()
@@ -46,6 +47,9 @@ def update_salary(id, salary):
 def update_specialization(id, specialization):
     con = sqlite3.connect("users_db.db")
     cur = con.cursor()
+
+    if specialization[0] == '/':
+        return
 
     cur.execute(f"""UPDATE users
         SET specialization = '{specialization}'
