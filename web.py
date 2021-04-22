@@ -1,7 +1,4 @@
 import requests
-import json
-import time
-import os
 from functions import iter_time
 import datetime
 
@@ -26,24 +23,26 @@ def parseJobs(data, salary):
     jobs = []
     used_id = []
     for i in range(5):
-        print(data)
+
         try:
-            job_salary = data["items"][i]["salary"]["from"]
-            job_name = data["items"][i]["name"]
-            job_city = data["items"][i]["address"]["city"]
-            job_published_at = data["items"][i]["published_at"]
-            url = data["items"][i]["alternate_url"]
-            id = data["items"][i]["id"]
-            if job_salary < salary or job_salary > salary:
-                continue
-            if id in used_id:
-                continue
+            if data['found'] > 0:
+                job_salary = data["items"][i]["salary"]["from"]
+                job_name = data["items"][i]["name"]
+                job_city = data["items"][i]["address"]["city"]
+                job_published_at = data["items"][i]["published_at"]
+                url = data["items"][i]["alternate_url"]
+                id = data["items"][i]["id"]
+                if job_salary < salary[0]:
+                    continue
+                else:
+                    used_id.append(id)
+                # if compareTime(job_published_at, str(datetime.datetime.now())):
+                jobs.append(
+                    {"name": job_name, "salary": job_salary, "city": job_city, "published_at": job_published_at,
+                     "url": url})
             else:
-                used_id.append(id)
-            if compareTime(job_published_at, str(datetime.datetime.now())):
-                jobs.append({"name": job_name, "salary": job_salary, "city": job_city, "published_at": job_published_at,
-                             "url": url})
-        except TypeError as te:
+                return None
+        except Exception as ex:
             continue
     return jobs
 
@@ -64,10 +63,3 @@ def compareTime(published_time, now_time):
 
 def getJobs(vacancy, salary, pages=0):
     return parseJobs(getPage(vacancy, pages), salary)
-
-# Считываем первые 20 вакансий
-# for page in range(0, 4):
-#     print(parseJobs(getPage(0)))
-#     # Преобразуем текст ответа запроса в словарь Python
-#     jsObj = json.loads(getPage(page))
-#     time.sleep(0.25)

@@ -4,6 +4,8 @@ from telegram import ReplyKeyboardMarkup
 from functions import *
 from telegram import ReplyKeyboardRemove
 import schedule
+from schedule import every, repeat
+import time
 from web import getJobs
 
 specialization_user = ""
@@ -67,9 +69,9 @@ def set_update_time(update, context):
     return 4
 
 
-def final_set(update, context):  ########################################################
-    global salary_user, specialization_user
-    iter_time = update.message.text()
+def final_set(update, context):
+    global salary_user, specialization_user, iter_time
+    iter_time = update.message.text
     t = iter_time.split()[1]
     if t[0] == 'm':
         iter_time = int(iter_time.split()[0])
@@ -79,23 +81,24 @@ def final_set(update, context):  ###############################################
     update.message.reply_text(
         "Отлично! Теперь вы не пропустите ни одну вакансию на профессию {} с зарплатой {} - {}руб".format(
             specialization_user, salary_user[0], salary_user[1]))
-    schedule.every(iter_time).minutes.do(get_vacancies(update, context))
+
     while running:
-        schedule.run_pending()
+        get_vacancies(update, context)
+        time.sleep(iter_time)
 
 
-def get_vacancies(update, context):  ###################################################
+@repeat(every(iter_time).seconds)
+def get_vacancies(update, context):
     jobs = getJobs(specialization_user, salary_user)
     if jobs:
         update.message.reply_text("Не пропустите новые вакансии!")
         for job in jobs:
-            print("Должность: {}"
-                  "Город: {}"
-                  "Зарплата: {}"
-                  "Опубликовано{}"
-                  "Подробнее{}".format(job["name"], job["city"], job["salary"], job["published_at"],
-                                       jobs["url"]))
-            print()
+            update.message.reply_text("Должность: {}\n"
+                                      "Город: {}\n"
+                                      "Зарплата: {}\n"
+                                      "Опубликовано{}\n"
+                                      "Подробнее{}".format(job["name"], job["city"], job["salary"], job["published_at"],
+                                                           job["url"]))
 
 
 def stop(update, context):
@@ -138,13 +141,12 @@ def main():
         fallbacks=[CommandHandler('stop', stop)]
     )
     dp.add_handler(conv_handler)
-
-    # text_handler = MessageHandler(Filters.text, echo)
-    # dp.add_handler(text_handler)
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("close", close_keyboard))
     dp.add_handler(CommandHandler("set_specialization", set_specialization))
+    dp.add_handler(CommandHandler("set_salary", reception_specialization))
+    dp.add_handler(CommandHandler("set_update_time", set_update_time))
     dp.add_handler(CommandHandler("open", open_keyboard))
     updater.start_polling()
 
