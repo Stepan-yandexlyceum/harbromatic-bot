@@ -89,7 +89,7 @@ def final_set(update, context):
 
 @repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
-    jobs = getJobs(specialization_user, salary_user)
+    jobs = getJobs(id_user, specialization_user, salary_user)
     if jobs:
         update.message.reply_text("Не пропустите новые вакансии!")
         for job in jobs:
