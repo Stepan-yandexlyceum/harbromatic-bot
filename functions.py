@@ -96,3 +96,42 @@ def get_specialization(id):
         return 'None'
 
     return specialization
+
+
+def add_used_id(id, used_id):
+    con = sqlite3.connect("users_db.db")
+    cur = con.cursor()
+    used_id_old = get_used_id(id)
+
+    if used_id in used_id_old or used_id[0] == '/':
+        return
+
+    if used_id_old != 'None':
+        used_id_old.append(used_id)
+        used_id = used_id_old
+        used_id = ', '.join(used_id)
+
+    print(topic)
+    cur.execute(f"""UPDATE users
+        SET used_id = '{used_id}'
+        WHERE id = {id}""")
+    
+    con.commit()
+    con.close()
+
+
+def get_used_id(id):
+    con = sqlite3.connect("users_db.db")
+    cur = con.cursor()
+
+    list_used_id = cur.execute("""SELECT used_id FROM users""").fetchall()
+
+    con.commit()
+    con.close()
+
+    if list_used_id == [(None,)]:
+        return 'None'
+
+    list_used_id = list_used_id[0][0].split(', ')
+
+    return list_used_id
