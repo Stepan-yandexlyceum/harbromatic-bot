@@ -87,7 +87,7 @@ def final_set(update, context):
         time.sleep(iter_time)
 
 
-# @repeat(every(iter_time).seconds)
+@repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
     print(1000)
     jobs = getJobs(id_user, specialization_user, salary_user)
