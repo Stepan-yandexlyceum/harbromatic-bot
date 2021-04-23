@@ -88,7 +88,7 @@ def final_set(update, context):
         time.sleep(iter_time * 60)
 
 
-@repeat(every(iter_time).seconds)
+#@repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
     global page
     jobs = getJobs(id_user, specialization_user, salary_user, page)
@@ -149,7 +149,7 @@ def get_my_data(update, context):
 
 
 def main():
-    updater = Updater('1527464989:AAGVTUsp2zUqUrThyUuX-vF6Rc6Z4QubRFU', use_context=True)
+    updater = Updater('1748088290:AAECIUFFgjPBCLhZEITijjas3Gf-l1U_F-I', use_context=True)
 
     dp = updater.dispatcher
 
