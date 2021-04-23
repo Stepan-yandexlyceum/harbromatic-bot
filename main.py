@@ -11,6 +11,7 @@ from web import getJobs
 specialization_user = ""
 salary_user = []
 running = True
+page = 0
 
 
 def start(update, content):
@@ -84,13 +85,13 @@ def final_set(update, context):
 
     while running:
         get_vacancies(update, context)
-        time.sleep(iter_time)
+        time.sleep(iter_time * 60)
 
 
 # @repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
-    print(1000)
-    jobs = getJobs(id_user, specialization_user, salary_user)
+    global page
+    jobs = getJobs(id_user, specialization_user, salary_user, page)
     if jobs:
         update.message.reply_text("Не пропустите новые вакансии!")
         for job in jobs:
@@ -101,6 +102,16 @@ def get_vacancies(update, context):
                                       "Подробнее: {}".format(job["name"], job["city"], job["salary"],
                                                              job["published_at"],
                                                              job["url"]))
+    else:
+        update.message.reply_text(
+            "К сожалению, вакансий по такому фильтру пока что нет, но возможно, появятся в будующем")
+    page = 0
+
+
+def more(update, context):
+    global page
+    page += 1
+    get_vacancies(update, context)
 
 
 def stop(update, context):
@@ -150,6 +161,7 @@ def main():
     dp.add_handler(CommandHandler("set_salary", reception_specialization))
     dp.add_handler(CommandHandler("set_update_time", set_update_time))
     dp.add_handler(CommandHandler("open", open_keyboard))
+    dp.add_handler(CommandHandler("more", more))
     updater.start_polling()
 
     updater.idle()
