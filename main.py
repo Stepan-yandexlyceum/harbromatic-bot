@@ -88,7 +88,7 @@ def final_set(update, context):
         time.sleep(iter_time * 60)
 
 
-# @repeat(every(iter_time).seconds)
+@repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
     global page
     jobs = getJobs(id_user, specialization_user, salary_user, page)
@@ -115,8 +115,14 @@ def more(update, context):
 
 
 def stop(update, context):
+    update.message.reply_text("Ok")
     global running
     running = False
+
+
+def resume(update, context):
+    update.message.reply_text("Ok")
+    running = True
 
 
 def close_keyboard(update, context):
@@ -134,6 +140,12 @@ def open_keyboard(update, context):
         "Ok",
         reply_markup=markup
     )
+
+
+def get_my_data(update, context):
+    specialization = get_specialization(id)
+    salary = get_salary(id)
+    update.message.reply_text(f"Ваша должность: {specialization}\nваш диапазон зарплаты {salary[0]} - {salary[1]}")
 
 
 def main():
