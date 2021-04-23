@@ -4,7 +4,7 @@ from telegram import ReplyKeyboardMarkup
 from functions import *
 from telegram import ReplyKeyboardRemove
 import schedule
-from schedule import every, repeat
+from schedule import every #, repeat
 import time
 from web import getJobs
 
@@ -174,6 +174,10 @@ def main():
     dp.add_handler(CommandHandler("set_update_time", set_update_time))
     dp.add_handler(CommandHandler("open", open_keyboard))
     dp.add_handler(CommandHandler("more", more))
+    dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler("resume", resume))
+    dp.add_handler(CommandHandler("get_my_data", get_my_data))
+    
     updater.start_polling()
 
     updater.idle()
