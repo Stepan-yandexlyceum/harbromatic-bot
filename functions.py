@@ -14,11 +14,12 @@ def is_new_user(id):
     list_id_users = cur.execute("""SELECT id FROM users""").fetchall()
     con.commit()
     con.close()
+    list_id_users = [i[0] for i in list_id_users]
 
     if list_id_users == []:
         return True
     # если пользователь новый возвращаем True, если старый False
-    if id in list_id_users[0]:
+    if id in list_id_users:
         return False
     return True
 
