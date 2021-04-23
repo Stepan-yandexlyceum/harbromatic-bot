@@ -112,7 +112,6 @@ def add_used_id(id, used_id):
         used_id = used_id_old
         used_id = ', '.join(used_id)
 
-    print(topic)
     cur.execute(f"""UPDATE users
         SET used_id = '{used_id}'
         WHERE id = {id}""")

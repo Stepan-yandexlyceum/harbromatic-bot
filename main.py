@@ -87,9 +87,8 @@ def final_set(update, context):
         time.sleep(iter_time)
 
 
-# @repeat(every(iter_time).seconds)
+@repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
-    print(1000)
     jobs = getJobs(id_user, specialization_user, salary_user)
     if jobs:
         update.message.reply_text("Не пропустите новые вакансии!")
@@ -97,15 +96,20 @@ def get_vacancies(update, context):
             update.message.reply_text("Должность: {}\n"
                                       "Город: {}\n"
                                       "Зарплата: {}\n"
-                                      "Опубликовано: {}\n"
-                                      "Подробнее: {}".format(job["name"], job["city"], job["salary"],
-                                                             job["published_at"],
-                                                             job["url"]))
+                                      "Опубликовано{}\n"
+                                      "Подробнее{}".format(job["name"], job["city"], job["salary"], job["published_at"],
+                                                           job["url"]))
 
 
 def stop(update, context):
+    update.message.reply_text("Ok")
     global running
     running = False
+
+
+def resume(update, context):
+    update.message.reply_text("Ok")
+    running = True
 
 
 def close_keyboard(update, context):
@@ -117,16 +121,22 @@ def close_keyboard(update, context):
 
 def open_keyboard(update, context):
     topics_keyboard = [['/help', '/set_specialization'],
-                       ['/get_my_topics', '/close']]
+                       ['/get_my_topics', '/close'], 
+                       ['/get_my_data']]
     markup = ReplyKeyboardMarkup(topics_keyboard, one_time_keyboard=False)
     update.message.reply_text(
         "Ok",
         reply_markup=markup
     )
 
+def get_my_data(update, context):
+    specialization = get_specialization(id)
+    salary = get_salary(id)
+    update.message.reply_text(f"Ваша должность: {specialization}\nваш диапазон зарплаты {salary[0]} - {salary[1]}")
+
 
 def main():
-    updater = Updater('1527464989:AAGVTUsp2zUqUrThyUuX-vF6Rc6Z4QubRFU', use_context=True)
+    updater = Updater('1768048648:AAFgaWJzCEkpQGp4Lt4401O53se7ePNEAsU', use_context=True)
 
     dp = updater.dispatcher
 
@@ -150,6 +160,8 @@ def main():
     dp.add_handler(CommandHandler("set_salary", reception_specialization))
     dp.add_handler(CommandHandler("set_update_time", set_update_time))
     dp.add_handler(CommandHandler("open", open_keyboard))
+    dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler("get_my_data", get_my_data))
     updater.start_polling()
 
     updater.idle()
