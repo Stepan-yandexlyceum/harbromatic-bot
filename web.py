@@ -1,5 +1,5 @@
 import requests
-from functions import iter_time, add_used_id
+from functions import iter_time, add_used_id, get_used_id
 import datetime
 
 
@@ -20,12 +20,13 @@ def getPage(vacancy, page=0):
 
 # Метод парсит json и представляет данные в виде списка словарей
 def parseJobs(user_id, data, salary):
+    # jobs = get_used_id(user_id)
     jobs = []
     used_id = []
     for i in range(5):
-
         try:
             if data['found'] > 0:
+                print(data["items"][i])
                 job_salary = data["items"][i]["salary"]["from"]
                 job_name = data["items"][i]["name"]
                 job_city = data["items"][i]["address"]["city"]
@@ -34,9 +35,9 @@ def parseJobs(user_id, data, salary):
                 id = data["items"][i]["id"]
                 if job_salary < salary[0]:
                     continue
-                else:
-                    used_id.append(id)
-                    add_used_id(user_id, id)
+                # else:
+                #     used_id.append(id)
+                #     add_used_id(user_id, id)
                 # if compareTime(job_published_at, str(datetime.datetime.now())):
                 jobs.append(
                     {"name": job_name, "salary": job_salary, "city": job_city, "published_at": job_published_at,
@@ -44,7 +45,10 @@ def parseJobs(user_id, data, salary):
             else:
                 return None
         except Exception as ex:
+            print(ex)
             continue
+    # add_used_id(user_id, used_id)
+    print(len(jobs))
     return jobs
 
 

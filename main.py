@@ -87,8 +87,9 @@ def final_set(update, context):
         time.sleep(iter_time)
 
 
-@repeat(every(iter_time).seconds)
+# @repeat(every(iter_time).seconds)
 def get_vacancies(update, context):
+    print(1000)
     jobs = getJobs(id_user, specialization_user, salary_user)
     if jobs:
         update.message.reply_text("Не пропустите новые вакансии!")
@@ -96,9 +97,10 @@ def get_vacancies(update, context):
             update.message.reply_text("Должность: {}\n"
                                       "Город: {}\n"
                                       "Зарплата: {}\n"
-                                      "Опубликовано{}\n"
-                                      "Подробнее{}".format(job["name"], job["city"], job["salary"], job["published_at"],
-                                                           job["url"]))
+                                      "Опубликовано: {}\n"
+                                      "Подробнее: {}".format(job["name"], job["city"], job["salary"],
+                                                             job["published_at"],
+                                                             job["url"]))
 
 
 def stop(update, context):
